@@ -2,10 +2,10 @@ part of dart_uploader;
 
 typedef UpdateListener = void Function(List<dynamic>);
 
-class _BackgroundTaskManger {
-  final _NetworkClient? _networkClient;
+class BackgroundTaskManger {
+  final NetworkClient? _networkClient;
 
-  _BackgroundTaskManger() : _networkClient = _NetworkClient();
+  BackgroundTaskManger() : _networkClient = NetworkClient();
 
   /// Holds the mapping of the tasks and relative [CancelToken].
   ///
@@ -28,7 +28,7 @@ class _BackgroundTaskManger {
             taskId: info.taskId,
             percentage: percentage,
             url: info.url,
-            status: RawUploadingStatus.uploading,
+            status: UploadingStatus.uploading,
           ).toRaw(),
         ),
         token,
@@ -40,7 +40,7 @@ class _BackgroundTaskManger {
             percentage: 100,
             taskId: info.taskId,
             url: info.url,
-            status: RawUploadingStatus.completed,
+            status: UploadingStatus.completed,
           ).toRaw(),
         );
         _cancelTokenContainer.remove(info.taskId);
@@ -50,7 +50,7 @@ class _BackgroundTaskManger {
         Task(
           taskId: info.taskId,
           url: info.url,
-          status: RawUploadingStatus.failed,
+          status: UploadingStatus.failed,
           error: error.toString(),
         ).toRaw(),
       );
@@ -65,7 +65,7 @@ class _BackgroundTaskManger {
     if (token != null) {
       _cancelTokenContainer.remove(info.taskId);
       token.cancel();
-      final newInfo = info.copyWith(status: RawUploadingStatus.cancelled);
+      final newInfo = info.copyWith(status: UploadingStatus.cancelled);
       onCancelled(newInfo.toRaw());
     }
   }

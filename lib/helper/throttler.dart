@@ -11,6 +11,7 @@ class Throttler {
   });
 
   final Duration throttleDuration;
+
   Timer? timer;
 
   void run(VoidCallback action) {

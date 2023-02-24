@@ -3,8 +3,8 @@ part of dart_uploader;
 typedef OnUpload = void Function(int percentage);
 
 @backgroundIsolate
-class _NetworkClient {
-  _NetworkClient() : _dio = Dio();
+class NetworkClient {
+  NetworkClient() : _dio = Dio();
   final Dio _dio;
 
   Future<Response<T>> request<T>({

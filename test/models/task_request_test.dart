@@ -1,4 +1,4 @@
-import 'package:dart_uploader/models/task_request.dart';
+import 'package:dart_uploader/dart_uploader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

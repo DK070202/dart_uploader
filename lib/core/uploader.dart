@@ -2,9 +2,9 @@ part of dart_uploader;
 
 @mainIsolate
 class Uploader {
-  Uploader._();
+  const Uploader._();
 
-  static final Uploader _instance = Uploader._();
+  static const Uploader _instance = Uploader._();
 
   static Uploader get instance => _instance;
 
@@ -16,13 +16,6 @@ class Uploader {
 
   /// The bg isolate sendPort.
   static SendPort? _sendPort;
-
-  /// Manages all ongoing uploads.
-  static _UploadTaskManger? _manager;
-
-  /// Returns all ongoing task.
-  static List<Stream<TaskStatus>> get getAllOngoingTask =>
-      _manager!.getAllOngoingTask;
 
   /// Setups the port for communication and invokes the background isolate.
   ///
@@ -42,8 +35,6 @@ class Uploader {
       debugName: 'Background Isolate',
     );
 
-    _manager = _UploadTaskManger();
-
     _receivePort!.listen((message) {
       log(message.toString());
       if (message is SendPort) {
@@ -59,9 +50,7 @@ class Uploader {
 
   /// Handles the message from the background isolate.
   static void _handleMessage(String method, Object? args) {
-    if (method == _postTaskUpdate) {
-      _manager!.onReceiveUpdate(Task.fromRaw(args as List));
-    }
+    if (method == _postTaskUpdate) {}
   }
 
   /// Enqueues the task in manger if the task was not registered against
@@ -70,28 +59,38 @@ class Uploader {
   ///
   /// If task was already registered then it will return the the state of the
   /// task in state of [Stream] against that [uniqTaskId].
-  Stream<TaskStatus> enqueueTheTask({
+  Task enqueueTheTask({
     required String url,
     required HttpMethod method,
     required String filePath,
     Map<String, dynamic>? headers,
-    String? uniqTaskId,
   }) {
     assert(
       _sendPort != null,
       'The sendPort can\'t be null, Initialize the service first via await BackGroundService.init()',
     );
-    return _manager!.enqueueTheTask(
+    final taskId = const Uuid().v1();
+
+    final request = TaskRequest(
+      taskId: taskId,
       url: url,
       method: method,
-      filePath: filePath,
-      headers: headers,
-      onSuccessfullyRegisterTask: (request) => _sendPort?.send(
-        SendPortMessageObject<List>(
-          name: _scheduleTask,
-          data: request.toRaw(),
-        ).toRow(),
+      fileEntity: FileEntity(
+        path: filePath,
       ),
+      headers: headers,
+    );
+
+    _sendPort?.send(
+      SendPortMessageObject<List>(
+        name: _scheduleTask,
+        data: request.toRaw(),
+      ).toRow(),
+    );
+
+    return Task(
+      taskId: taskId,
+      url: url,
     );
   }
 
@@ -102,13 +101,13 @@ class Uploader {
   /// isolate.
   static void _bgIsolateMain(SendPort sendPort) {
     final bgIsolateService = BgIsolateHandler();
-    bgIsolateService._init(sendPort);
+    bgIsolateService.init(sendPort);
   }
 
   /// Shutdowns the background isolate.
   static void shutDown() {
     _backgroundIsolate?.kill();
-    _manager = null;
+
     _receivePort = null;
     _backgroundIsolate = null;
     _sendPort = null;

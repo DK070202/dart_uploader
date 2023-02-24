@@ -1,3 +1,7 @@
+// ignore_for_file: constant_identifier_names
+
+part of dart_uploader;
+
 /// An info class which hold requires the necessary info to upload file at
 /// destination [url]
 

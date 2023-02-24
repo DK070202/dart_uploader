@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:dart_uploader/dart_uploader.dart';
-import 'package:dart_uploader/models/task_request.dart';
-import 'package:dart_uploader/models/task_status.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -37,11 +35,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final int _counter = 0;
-
   PickedFile? file;
 
-  TaskStatus? uploadingTask;
+  Task? uploadingTask;
 
   @override
   void dispose() {
@@ -53,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
     file = await ImagePicker.platform.pickImage(source: ImageSource.camera);
     final fileToUpload = File(file!.path);
     final length = await fileToUpload.length();
+
+    /// TODO : Here register the task from where we can listen updates.
     Uploader.instance.enqueueTheTask(
       filePath: fileToUpload.path,
       url: '<URL>',
@@ -62,10 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Connection': 'keep-alive',
         'Content-Length': length,
       },
-    ).listen((event) {
-      uploadingTask = event;
-      setState(() {});
-    });
+    );
   }
 
   @override
@@ -78,38 +73,32 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (uploadingTask == null) const Text('Processing ....'),
-            if (uploadingTask != null)
-              uploadingTask!.when<Widget>(
-                ongoing: (taskId, percentage, url) {
-                  return SizedBox.square(
-                    dimension: 35,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: CircularProgressIndicator(
-                            value: (percentage / 100).toDouble(),
-                          ),
-                        ),
-                        const Align(
-                          child: Icon(
-                            Icons.upload_file_outlined,
-                          ),
-                        )
-                      ],
+            if (uploadingTask != null && uploadingTask!.status.isUploading)
+              SizedBox.square(
+                dimension: 35,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: CircularProgressIndicator(
+                        value: (uploadingTask!.percentage / 100).toDouble(),
+                      ),
                     ),
-                  );
-                },
-                completed: (taskId, url) => const Icon(
-                  Icons.file_download_done,
+                    const Align(
+                      child: Icon(
+                        Icons.upload_file_outlined,
+                      ),
+                    )
+                  ],
                 ),
-                failed: (taskId, url, error) => const Icon(
-                  Icons.close,
-                ),
-                cancelled: (taskId, url) => const Icon(
-                  Icons.close,
-                ),
-              )
+              ),
+            if (uploadingTask != null && uploadingTask!.status.isFailed)
+              const Icon(
+                Icons.close,
+              ),
+            if (uploadingTask != null && uploadingTask!.status.isFailed)
+              const Icon(
+                Icons.close,
+              ),
           ],
         ),
       ),
