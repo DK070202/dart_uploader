@@ -20,7 +20,7 @@ class Task {
       taskId: data[0],
       percentage: data[1],
       url: data[2],
-      status: UploadingStatus.fromStatus(data[3]),
+      status: UploadingStatus.fromRaw(data[3]),
       error: data[4],
     );
   }
@@ -56,13 +56,13 @@ enum UploadingStatus {
   const UploadingStatus(this.status);
   final int status;
 
-  factory UploadingStatus.fromStatus(int status) {
+  factory UploadingStatus.fromRaw(int status) {
     if (status == 0) return UploadingStatus.enqueued;
     if (status == 1) return UploadingStatus.uploading;
     if (status == 2) return UploadingStatus.completed;
     if (status == 3) return UploadingStatus.cancelled;
     if (status == 4) return UploadingStatus.failed;
-    return UploadingStatus.failed;
+    throw Exception('Method not found');
   }
 
   bool get isUploading => this == UploadingStatus.uploading;

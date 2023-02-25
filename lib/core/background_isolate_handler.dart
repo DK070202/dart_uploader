@@ -33,7 +33,7 @@ class BgIsolateHandler {
   void handleMessage(String method, Object? args) {
     if (method == _scheduleTask) {
       if (args == null) return;
-      final request = TaskRequest.fromRawList(args as List);
+      final request = TaskRequest.fromRaw(args as List);
       scheduleUpload(request);
       return;
     }

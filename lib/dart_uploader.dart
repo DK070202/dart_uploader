@@ -17,5 +17,5 @@ part 'core/network_client.dart';
 part 'core/uploader.dart';
 part 'helper/isolate_message_object.dart';
 part 'helper/throttler.dart';
+part 'models/task.dart';
 part 'models/task_request.dart';
-part 'models/task_status.dart';
