@@ -28,11 +28,11 @@ class TaskRequest {
   /// File entity.
   final FileEntity fileEntity;
 
-  factory TaskRequest.fromRawList(List<dynamic> data) {
+  factory TaskRequest.fromRaw(List<dynamic> data) {
     return TaskRequest(
       taskId: data[0],
       url: data[1],
-      method: HttpMethod.fromRawMethod(data[2]),
+      method: HttpMethod.fromRaw(data[2]),
       headers: data[3],
       fileEntity: FileEntity(
         path: data[4],
@@ -79,7 +79,7 @@ enum HttpMethod {
   const HttpMethod(this.method);
   final int method;
 
-  factory HttpMethod.fromRawMethod(int method) {
+  factory HttpMethod.fromRaw(int method) {
     if (method == 0) return HttpMethod.POST;
     if (method == 1) return HttpMethod.PUT;
     if (method == 2) return HttpMethod.PATCH;

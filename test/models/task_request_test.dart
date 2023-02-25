@@ -2,40 +2,40 @@ import 'package:dart_uploader/dart_uploader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Task: ', () {
-    group('Parsing http method : ', () {
+  group('[Task request]:', () {
+    group('Parsing http method -', () {
       test('POST', () {
         const value = 0;
 
-        final parsedOne = HttpMethod.fromRawMethod(value);
+        final parsedOne = HttpMethod.fromRaw(value);
 
         expect(parsedOne, HttpMethod.POST);
       });
       test('PUT', () {
         const value = 1;
 
-        final parsedOne = HttpMethod.fromRawMethod(value);
+        final parsedOne = HttpMethod.fromRaw(value);
 
         expect(parsedOne, HttpMethod.PUT);
       });
       test('PATCH', () {
         const value = 2;
 
-        final parsedOne = HttpMethod.fromRawMethod(value);
+        final parsedOne = HttpMethod.fromRaw(value);
 
         expect(parsedOne, HttpMethod.PATCH);
       });
-      test('Throws error', () {
+      test('UNKNOWN', () {
         const value = 40;
 
         expect(
-          () => HttpMethod.fromRawMethod(value),
+          () => HttpMethod.fromRaw(value),
           throwsA(const TypeMatcher<Exception>()),
         );
       });
     });
 
-    group('Request', () {
+    group('Request Parsing', () {
       const taskId = 'Some task Id';
       const path = '<FILE PATH>';
       const url = '<The url>';
@@ -49,7 +49,7 @@ void main() {
         const fileEntity = FileEntity(path: path);
         const List<Object?> data = [taskId, url, method, headers, path];
 
-        final request = TaskRequest.fromRawList(data);
+        final request = TaskRequest.fromRaw(data);
 
         expect(request.taskId, taskId);
         expect(request.url, url);
@@ -61,7 +61,7 @@ void main() {
       test('Serialization', () {
         const fileEntity = FileEntity(path: path);
         const List<Object?> data = [taskId, url, method, headers, path];
-        final request = TaskRequest.fromRawList(data);
+        final request = TaskRequest.fromRaw(data);
 
         final rawData = request.toRaw();
 
